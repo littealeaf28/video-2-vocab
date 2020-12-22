@@ -30,12 +30,14 @@ export class VideoProcessController {
         callback(null, `${uuid()}.${fileExtension}`)
       }
     })
-    // storage: memoryStorage() //
+    // storage: memoryStorage()
   }))
   async processVideo(@UploadedFile() file): Promise<boolean | HttpException> {
-    let fileName: string
+    // console.log(process.env)
+
+    let audioFilePath: string
     try {
-      fileName = await this.videoProcess.extractSoundFromVideo(`./tmp/${file.filename}`)
+      audioFilePath = await this.videoProcess.extractSoundFromVideo(`./tmp/${file.filename}`)
       // await this.videoProcess.extractSoundFromVideo(file.buffer)
     } catch(err) {
       return new HttpException('Failed to extract audio from video', 500)
@@ -43,7 +45,8 @@ export class VideoProcessController {
 
     // TODO: Delete mp4
 
-    console.log(fileName)
+    console.log(audioFilePath)
+    await this.videoProcess.speechToText(audioFilePath)
     return true
   }
 }
